@@ -12,12 +12,12 @@ class Wall():
 
 class Light():
 
-    def __init__(self):
+    def __init__(self , brightness ):
         self.pos = pygame.math.Vector2(w/2, h/2)
         self.rays = []
-        num_rays = 365
-        for i in range(num_rays):
-            angle = i * (2 * math.pi / num_rays)
+        self.brightness = brightness
+        for i in range(self.brightness):
+            angle = i * (2 * math.pi / self.brightness)
             x = math.cos(angle)
             y = math.sin(angle)
             direction = pygame.math.Vector2(x, y)
@@ -100,9 +100,8 @@ walls.append(Wall((0,h),(w,h)))
 walls.append(Wall((w,h),(w,0)))
 for i in range(5):
     walls.append(Wall((random.randint(0, w),random.randint(0, h)),  (random.randint(0, w),random.randint(0, h)) ))
-#wall = Wall((600,300),(900, 400))
-#ray = Ray(100,400)
-light = Light()
+
+light = Light(10)
 
 def main():
     while True:
@@ -118,7 +117,6 @@ def main():
         mouse_position = pygame.mouse.get_pos()
         light.controller(mouse_position[0], mouse_position[1])
         light.check_intersection(walls)
-        #light.draw()
         pygame.display.update()
         clock.tick(120)
         
