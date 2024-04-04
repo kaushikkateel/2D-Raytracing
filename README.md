@@ -12,12 +12,10 @@ Version 1 samples:
 
 <img src="https://github.com/kaushikkateel/2D-Raytracing/blob/main/sample1.png" width="50%">
 
-![alt text](https://github.com/kaushikkateel/2D-Raytracing/blob/main/sample1.png)
-
-![alt text](https://github.com/kaushikkateel/2D-Raytracing/blob/main/sample2.png)
+<img src="https://github.com/kaushikkateel/2D-Raytracing/blob/main/sample2.png" width="50%">
 
 Version 2 samples:
 
-![alt text](https://github.com/kaushikkateel/2D-Raytracing/blob/main/sample3.png)
+<img src="https://github.com/kaushikkateel/2D-Raytracing/blob/main/sample3.png" width="50%">
 
-![alt text](https://github.com/kaushikkateel/2D-Raytracing/blob/main/sample4.png)
+<img src="https://github.com/kaushikkateel/2D-Raytracing/blob/main/sample4.png" width="50%">
