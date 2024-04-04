@@ -10,9 +10,7 @@ https://www.youtube.com/watch?v=TOEi6T2mtHo
 
 Version 1 samples:
 
-<img src="https://github.com/kaushikkateel/2D-Raytracing/blob/main/sample1.png" width="50%">
-
-<img src="https://github.com/kaushikkateel/2D-Raytracing/blob/main/sample2.png" width="50%">
+<img src="https://github.com/kaushikkateel/2D-Raytracing/blob/main/sample1.png" width="50%">   <img src="https://github.com/kaushikkateel/2D-Raytracing/blob/main/sample2.png" width="50%">
 
 Version 2 samples:
 
