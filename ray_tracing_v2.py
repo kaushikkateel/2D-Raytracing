@@ -8,7 +8,7 @@ class Wall():
         self.b = pygame.math.Vector2(b)
     
     def draw(self):
-        pygame.draw.line(screen, pygame.Color('White'), self.a,self.b, 5)
+        pygame.draw.line(screen, pygame.Color((247, 252, 245)), self.a,self.b, 2)
 
 '''class Map_generator():
     areas = random.randint(2, 6)
@@ -19,11 +19,57 @@ class Wall():
         x_ = random.randrange(x_, w, 100)
         x.append(x_)'''
 
+def map():
+    vertices=[]
+    map_walls=[]
+    for _ in range(0, random.randint(4, 8)):
+        x = random.randrange(0, w/2,10)
+        y = random.randrange(0, h/2,10)
+        vertices.append((x,y))
+    vertices = sorted(vertices, key=lambda v: math.atan2(v[1]-h *1/4 , v[0]-w * 1/4))
+    for i in range(0, len(vertices)):
+        if(i!=len(vertices)-1):
+            map_walls.append(Wall(vertices[i], vertices[i+1]))
+        else: map_walls.append(Wall(vertices[i], vertices[0]))
+    vertices=[]
+    for _ in range(0, random.randint(4, 8)):
+        x = random.randrange(w/2, w,10)
+        y = random.randrange(0, h/2,10)
+        vertices.append((x,y))
+    vertices = sorted(vertices, key=lambda v: math.atan2(v[1]-h *1/4 , v[0]-w * 3/4))
+    for i in range(0, len(vertices)):
+        if(i!=len(vertices)-1):
+            map_walls.append(Wall(vertices[i], vertices[i+1]))
+        else: map_walls.append(Wall(vertices[i], vertices[0]))
+    vertices=[]    
+    for _ in range(0, random.randint(4, 8)):
+        x = random.randrange(0, w/2,10)
+        y = random.randrange(h/2, h,10)
+        vertices.append((x,y))
+    vertices = sorted(vertices, key=lambda v: math.atan2(v[1]-h *3/4 , v[0]-w * 1/4))
+    for i in range(0, len(vertices)):
+        if(i!=len(vertices)-1):
+            map_walls.append(Wall(vertices[i], vertices[i+1]))
+        else: map_walls.append(Wall(vertices[i], vertices[0]))
+    vertices=[]
+    for _ in range(0, random.randint(4, 8)):
+        x = random.randrange(w/2, w,10)
+        y = random.randrange(h/2, h,10)
+        vertices.append((x,y))
+    vertices = sorted(vertices, key=lambda v: math.atan2(v[1]-h *3/4 , v[0]-w * 3/4))
+    for i in range(0, len(vertices)):
+        if(i!=len(vertices)-1):
+            map_walls.append(Wall(vertices[i], vertices[i+1]))
+        else: map_walls.append(Wall(vertices[i], vertices[0]))
+    vertices=[]
+    return map_walls
+    
 class Light():
 
     def __init__(self , walls ):
         self.pos = pygame.math.Vector2(w/2, h/2)
         self.rays = []
+        self.light_points =[]
     
     def check_intersection(self, walls):
 
@@ -38,17 +84,25 @@ class Light():
                         min_dist = dist
                         closest = point
             if(closest):
-                pygame.draw.circle(screen,pygame.Color('Red'),(closest.x, closest.y),5,0)
-                pygame.draw.line(screen, pygame.Color('White'), self.pos , (closest.x, closest.y))
+                self.light_points.append(closest)
+                #pygame.draw.line(screen, pygame.Color((227, 30, 5)), self.pos , (closest.x, closest.y))
+                #pygame.draw.circle(screen,pygame.Color((242, 133, 119)),(closest.x, closest.y),5,0)
     
     def controller(self, x, y):
         self.pos.x = x
         self.pos.y = y
         self.rays = []
+        self.light_points = []
         for wall in walls:
             self.rays.append(Ray(self.pos, wall.a))
             self.rays.append(Ray(self.pos, wall.b))
-        
+
+            #2 extra rays for each wall edge with offset of +- 0.001. this is to hit the boundary
+            self.rays.append(Ray(self.pos, pygame.math.Vector2((wall.a.x+0.001), (wall.a.y+0.001))))
+            self.rays.append(Ray(self.pos, pygame.math.Vector2((wall.b.x+0.001), (wall.b.y+0.001))))
+            self.rays.append(Ray(self.pos, pygame.math.Vector2((wall.a.x-0.001), (wall.a.y-0.001))))
+            self.rays.append(Ray(self.pos, pygame.math.Vector2((wall.b.x-0.001), (wall.b.y-0.001))))
+            
     def draw(self):
         for ray in self.rays:
             ray.draw()
@@ -96,12 +150,19 @@ pygame.display.set_caption('Ray Tracing')
 clock = pygame.time.Clock()
 w,h = pygame.display.get_surface().get_size()
 walls = []
-walls.append(Wall((0,0),(0,h)))
-walls.append(Wall((0,0),(w,0)))
-walls.append(Wall((0,h),(w,h)))
-walls.append(Wall((w,h),(w,0)))
-for i in range(3):
-    walls.append(Wall((random.randint(0, w),random.randint(0, h)),  (random.randint(0, w),random.randint(0, h)) ))
+boundary = []
+
+#draw boundary
+boundary.append(Wall((-5,-5),(-5,h+5)))
+boundary.append(Wall((-5,-5),(w+5,-5)))
+boundary.append(Wall((-5,h+5),(w+5,h+5)))
+boundary.append(Wall((w+5,h+5),(w+5,-5)))
+
+walls+=boundary
+walls+= map()
+
+'''for i in range(5):
+    walls.append(Wall((random.randint(0, w),random.randint(0, h)),  (random.randint(0, w),random.randint(0, h)) ))'''
 
 light = Light(walls)
 
@@ -113,11 +174,14 @@ def main():
                 sys.exit()
             
         screen.fill((11,14,15))
-        for wall in walls:
-            wall.draw()
         mouse_position = pygame.mouse.get_pos()
         light.controller(mouse_position[0], mouse_position[1])
         light.check_intersection(walls)
+        pygame.draw.polygon(screen, pygame.Color((181, 161, 194)), sorted((tuple(v) for v in light.light_points), key=lambda v: math.atan2(v[1]-light.pos.y, v[0]-light.pos.x)) )
+        for wall in walls:
+            wall.draw()
+        pygame.draw.circle(screen,pygame.Color((255, 235, 156)),(light.pos.x, light.pos.y),20)
+        
         pygame.display.update()
         clock.tick(120)
         
