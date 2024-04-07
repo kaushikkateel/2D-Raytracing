@@ -98,11 +98,15 @@ class Light():
             self.rays.append(Ray(self.pos, wall.b))
 
             #2 extra rays for each wall edge with offset of +- 0.001. this is to hit the boundary
-            self.rays.append(Ray(self.pos, pygame.math.Vector2((wall.a.x+0.001), (wall.a.y+0.001))))
-            self.rays.append(Ray(self.pos, pygame.math.Vector2((wall.b.x+0.001), (wall.b.y+0.001))))
-            self.rays.append(Ray(self.pos, pygame.math.Vector2((wall.a.x-0.001), (wall.a.y-0.001))))
-            self.rays.append(Ray(self.pos, pygame.math.Vector2((wall.b.x-0.001), (wall.b.y-0.001))))
-            
+            #find the distance using (wall.a.x - self.pos.x) i.e radius and multiply this with angle
+            #add the calulated radius to the self.pos to adjust the position of the calulated radius wrt self.pos
+            dist_a = pygame.math.Vector2.distance_to(self.pos, wall.a)
+            dist_b = pygame.math.Vector2.distance_to(self.pos, wall.b)
+            self.rays.append(Ray(self.pos, pygame.math.Vector2((self.pos.x + ( dist_a * math.cos( math.atan2(wall.a.y-self.pos.y, wall.a.x-self.pos.x) + 0.001))),  (self.pos.y + (dist_a * math.sin(math.atan2(wall.a.y-self.pos.y, wall.a.x-self.pos.x) + 0.001))))))
+            self.rays.append(Ray(self.pos, pygame.math.Vector2((self.pos.x + ( dist_b * math.cos( math.atan2(wall.b.y-self.pos.y, wall.b.x-self.pos.x) + 0.001))),  (self.pos.y + (dist_b * math.sin(math.atan2(wall.b.y-self.pos.y, wall.b.x-self.pos.x) + 0.001))))))
+            self.rays.append(Ray(self.pos, pygame.math.Vector2((self.pos.x + ( dist_a * math.cos( math.atan2(wall.a.y-self.pos.y, wall.a.x-self.pos.x) - 0.001))),  (self.pos.y + (dist_a * math.sin(math.atan2(wall.a.y-self.pos.y, wall.a.x-self.pos.x) - 0.001))))))
+            self.rays.append(Ray(self.pos, pygame.math.Vector2((self.pos.x + ( dist_b * math.cos( math.atan2(wall.b.y-self.pos.y, wall.b.x-self.pos.x) - 0.001))),  (self.pos.y + (dist_b * math.sin(math.atan2(wall.b.y-self.pos.y, wall.b.x-self.pos.x) - 0.001))))))
+
     def draw(self):
         for ray in self.rays:
             ray.draw()
@@ -153,15 +157,15 @@ walls = []
 boundary = []
 
 #draw boundary
-boundary.append(Wall((-5,-5),(-5,h+5)))
-boundary.append(Wall((-5,-5),(w+5,-5)))
-boundary.append(Wall((-5,h+5),(w+5,h+5)))
-boundary.append(Wall((w+5,h+5),(w+5,-5)))
+boundary.append(Wall((0,0),(0,h+0)))
+boundary.append(Wall((0,0),(w+0,0)))
+boundary.append(Wall((0,h+0),(w+0,h+0)))
+boundary.append(Wall((w+0,h+0),(w+0,0)))
 
 walls+=boundary
 walls+= map()
 
-'''for i in range(5):
+'''for i in range(1):
     walls.append(Wall((random.randint(0, w),random.randint(0, h)),  (random.randint(0, w),random.randint(0, h)) ))'''
 
 light = Light(walls)
