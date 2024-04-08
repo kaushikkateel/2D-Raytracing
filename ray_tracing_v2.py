@@ -1,5 +1,4 @@
 import pygame, sys, random, math
-import random
 
 class Wall():
 
@@ -10,18 +9,11 @@ class Wall():
     def draw(self):
         pygame.draw.line(screen, pygame.Color((247, 252, 245)), self.a,self.b, 3)
 
-'''class Map_generator():
-    areas = random.randint(2, 6)
-    x=[0]
-    y=[0]
-    x_ = 0
-    for area in range(0, areas, 2):
-        x_ = random.randrange(x_, w, 100)
-        x.append(x_)'''
-
 def map():
+
     vertices=[]
     map_walls=[]
+
     for _ in range(0, random.randint(4, 8)):
         x = random.randrange(0, w/2,10)
         y = random.randrange(0, h/2,10)
@@ -150,13 +142,25 @@ class Ray():
             point  = pygame.math.Vector2(ptx, pty)
             return point
         else: return
+
+def light_surface(light, color ):
     
+    light_surface  = pygame.Surface((w,h))
+    pygame.draw.polygon(light_surface, color , sorted((tuple(v) for v in light.light_points), key=lambda v: math.atan2(v[1]-light.pos.y, v[0]-light.pos.x)) )
+    light_surface.set_colorkey((bg_color))
+    return light_surface
+
+
 pygame.init()
 monitor_size = [1280,720]
 screen = pygame.display.set_mode(monitor_size)
 pygame.display.set_caption('Ray Tracing')
 clock = pygame.time.Clock()
 w,h = pygame.display.get_surface().get_size()
+
+bg_color = (65, 47, 74)
+light_brightness = (52, 52, 52)
+
 walls = []
 boundary = []
 
@@ -181,11 +185,11 @@ def main():
                 pygame.quit()
                 sys.exit()
             
-        screen.fill((11,14,15))
+        screen.fill(bg_color)
         mouse_position = pygame.mouse.get_pos()
         light.controller(mouse_position[0], mouse_position[1])
         light.check_intersection(walls)
-        pygame.draw.polygon(screen, pygame.Color((181, 161, 194)), sorted((tuple(v) for v in light.light_points), key=lambda v: math.atan2(v[1]-light.pos.y, v[0]-light.pos.x)) )
+        screen.blit(light_surface(light, light_brightness), (0,0), special_flags=pygame.BLEND_RGB_ADD)
         for wall in walls:
             wall.draw()
         pygame.draw.circle(screen,pygame.Color((255, 235, 156)),(light.pos.x, light.pos.y),20)
