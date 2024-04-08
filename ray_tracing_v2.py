@@ -8,7 +8,7 @@ class Wall():
         self.b = pygame.math.Vector2(b)
     
     def draw(self):
-        pygame.draw.line(screen, pygame.Color((247, 252, 245)), self.a,self.b, 2)
+        pygame.draw.line(screen, pygame.Color((247, 252, 245)), self.a,self.b, 3)
 
 '''class Map_generator():
     areas = random.randint(2, 6)
@@ -93,19 +93,23 @@ class Light():
         self.pos.y = y
         self.rays = []
         self.light_points = []
+        
         for wall in walls:
             self.rays.append(Ray(self.pos, wall.a))
             self.rays.append(Ray(self.pos, wall.b))
 
             #2 extra rays for each wall edge with offset of +- 0.001. this is to hit the boundary
-            #find the distance using (wall.a.x - self.pos.x) i.e radius and multiply this with angle
+            #find the distance i.e radius and multiply this with angle+-0.001
             #add the calulated radius to the self.pos to adjust the position of the calulated radius wrt self.pos
             dist_a = pygame.math.Vector2.distance_to(self.pos, wall.a)
             dist_b = pygame.math.Vector2.distance_to(self.pos, wall.b)
-            self.rays.append(Ray(self.pos, pygame.math.Vector2((self.pos.x + ( dist_a * math.cos( math.atan2(wall.a.y-self.pos.y, wall.a.x-self.pos.x) + 0.001))),  (self.pos.y + (dist_a * math.sin(math.atan2(wall.a.y-self.pos.y, wall.a.x-self.pos.x) + 0.001))))))
-            self.rays.append(Ray(self.pos, pygame.math.Vector2((self.pos.x + ( dist_b * math.cos( math.atan2(wall.b.y-self.pos.y, wall.b.x-self.pos.x) + 0.001))),  (self.pos.y + (dist_b * math.sin(math.atan2(wall.b.y-self.pos.y, wall.b.x-self.pos.x) + 0.001))))))
-            self.rays.append(Ray(self.pos, pygame.math.Vector2((self.pos.x + ( dist_a * math.cos( math.atan2(wall.a.y-self.pos.y, wall.a.x-self.pos.x) - 0.001))),  (self.pos.y + (dist_a * math.sin(math.atan2(wall.a.y-self.pos.y, wall.a.x-self.pos.x) - 0.001))))))
-            self.rays.append(Ray(self.pos, pygame.math.Vector2((self.pos.x + ( dist_b * math.cos( math.atan2(wall.b.y-self.pos.y, wall.b.x-self.pos.x) - 0.001))),  (self.pos.y + (dist_b * math.sin(math.atan2(wall.b.y-self.pos.y, wall.b.x-self.pos.x) - 0.001))))))
+            angle_a = math.atan2(wall.a.y-self.pos.y, wall.a.x-self.pos.x)
+            angle_b = math.atan2(wall.b.y-self.pos.y, wall.b.x-self.pos.x)
+
+            self.rays.append(Ray(self.pos, pygame.math.Vector2((self.pos.x + ( dist_a * math.cos( angle_a + 0.001))),  (self.pos.y + (dist_a * math.sin(angle_a + 0.001))))))
+            self.rays.append(Ray(self.pos, pygame.math.Vector2((self.pos.x + ( dist_b * math.cos( angle_b + 0.001))),  (self.pos.y + (dist_b * math.sin(angle_b + 0.001))))))
+            self.rays.append(Ray(self.pos, pygame.math.Vector2((self.pos.x + ( dist_a * math.cos( angle_a - 0.001))),  (self.pos.y + (dist_a * math.sin(angle_a - 0.001))))))
+            self.rays.append(Ray(self.pos, pygame.math.Vector2((self.pos.x + ( dist_b * math.cos( angle_b - 0.001))),  (self.pos.y + (dist_b * math.sin(angle_b - 0.001))))))
 
     def draw(self):
         for ray in self.rays:
